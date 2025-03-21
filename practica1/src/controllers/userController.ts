@@ -1,5 +1,19 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import bcrypt from "bcryptjs";
+
+
+export const createUser = async (req: Request, res: Response) => {
+     const { nombre, email, contraseña, rol } = req.body;
+        try {
+            const hashedPassword = await bcrypt.hash(contraseña, 10);
+            const newUser = new User({ nombre, email, contraseña: hashedPassword, rol });
+            await newUser.save();
+            res.status(201).json({ mensaje: "Usuario registrado" });
+        } catch (error) {
+            res.status(500).json({ error: "Error en el registro" });
+        }
+}
 
 export const listUsers = async (req: Request, res: Response) => {
     try {
